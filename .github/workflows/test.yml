@@ -3,6 +3,9 @@ name: Test Kakenhi Feed
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -24,3 +27,14 @@ jobs:
 
       - name: Show feed
         run: cat docs/feed.xml
+
+      - name: Commit feed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+
+          git add docs/feed.xml
+
+          git diff --staged --quiet || git commit -m "Update feed"
+
+          git push 
