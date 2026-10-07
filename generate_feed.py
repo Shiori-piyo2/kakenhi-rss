@@ -25,6 +25,9 @@ kakenhi_items.sort(
     reverse=True
 )
 
+# 最新50件だけ残す
+kakenhi_items = kakenhi_items[:50]
+
 # RSS作成
 fg = FeedGenerator()
 fg.id("https://www.jsps.go.jp/j-grantsinaid/")
