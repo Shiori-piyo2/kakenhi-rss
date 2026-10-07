@@ -21,3 +21,6 @@ jobs:
 
       - name: Run script
         run: python generate_feed.py
+
+      - name: Show feed
+        run: cat feed.xml
