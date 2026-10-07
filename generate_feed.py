@@ -1,20 +1,31 @@
 import requests
+from feedgen.feed import FeedGenerator
 
-url = "https://www.jsps.go.jp/include/news/inform_ja.json"
+JSON_URL = "https://www.jsps.go.jp/include/news/inform_ja.json"
 
-data = requests.get(url).json()
+data = requests.get(JSON_URL).json()
 
-count = 0
+fg = FeedGenerator()
+fg.title("科研費 新着情報")
+fg.link(href="https://www.jsps.go.jp/j-grantsinaid/")
+fg.description("JSPS 科研費関連情報")
 
 for item in data:
+
     site_url = item.get("site_url", "")
 
-    if "/j-grantsinaid/" in site_url:
-        count += 1
+    if "/j-grantsinaid/" not in site_url:
+        continue
 
-        print(item["news_date"])
-        print(item["title"])
-        print(site_url)
-        print("-" * 50)
+    title = item["title"]
 
-print(f"科研費記事: {count}件")
+    link = "https://www.jsps.go.jp" + site_url
+
+    entry = fg.add_entry()
+    entry.title(title)
+    entry.link(href=link)
+    entry.guid(link)
+
+fg.rss_file("feed.xml")
+
+print("feed.xml を生成しました")
