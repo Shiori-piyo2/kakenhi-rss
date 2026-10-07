@@ -5,18 +5,18 @@ from feedgen.feed import FeedGenerator
 JSON_URL = "https://www.jsps.go.jp/include/news/inform_ja.json"
 
 # JSON取得
-data = requests.get(JSON_URL)
-data.raise_for_status()
-data = data.json()
+response = requests.get(JSON_URL)
+response.raise_for_status()
+data = response.json()
 
-# 科研費記事のみ抽出
+# 科研費関連のみ抽出
 kakenhi_items = [
     item
     for item in data
     if "/j-grantsinaid/" in item.get("site_url", "")
 ]
 
-# 日付の新しい順に並べ替え
+# 新しい順に並べ替え
 kakenhi_items.sort(
     key=lambda x: datetime.strptime(
         x["news_date"],
@@ -27,6 +27,7 @@ kakenhi_items.sort(
 
 # RSS作成
 fg = FeedGenerator()
+fg.id("https://www.jsps.go.jp/j-grantsinaid/")
 fg.title("科研費 新着情報")
 fg.link(href="https://www.jsps.go.jp/j-grantsinaid/")
 fg.description("JSPS 科研費関連情報")
@@ -34,10 +35,8 @@ fg.description("JSPS 科研費関連情報")
 for item in kakenhi_items:
 
     title = item["title"]
-
     link = "https://www.jsps.go.jp" + item["site_url"]
 
-    # 日付変換
     pub_date = datetime.strptime(
         item["news_date"],
         "%Y-%m-%d %H:%M:%S"
@@ -49,7 +48,12 @@ for item in kakenhi_items:
     entry.guid(link)
     entry.pubDate(pub_date)
 
-# RSS出力
+# ファイル出力
 fg.rss_file("docs/feed.xml")
 
 print(f"科研費記事 {len(kakenhi_items)} 件を出力しました")
+
+# デバッグ表示（不要なら削除）
+print("\n===== 先頭10件 =====")
+for item in kakenhi_items[:10]:
+    print(item["news_date"], item["title"])
