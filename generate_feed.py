@@ -26,6 +26,6 @@ for item in data:
     entry.link(href=link)
     entry.guid(link)
 
-fg.rss_file("feed.xml")
+fg.rss_file("docs/feed.xml")
 
 print("feed.xml を生成しました")
